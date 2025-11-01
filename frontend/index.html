@@ -21,7 +21,6 @@
                     <a href="#overview">Overview</a>
                     <a href="#analytics">Analytics</a>
                     <a href="#staking">Staking</a>
-                    <a href="#migration">Migration</a>
                     <a href="#revenue">Revenue</a>
                 </nav>
             </div>
@@ -76,10 +75,6 @@
                     <span class="label">Staked:</span>
                     <span class="value" id="staked-amount">0 TREVEE</span>
                 </div>
-                <div class="secondary-metric">
-                    <span class="label">PAL Migrated:</span>
-                    <span class="value" id="pal-migrated">0 PAL</span>
-                </div>
             </div>
         </div>
     </section>
@@ -112,14 +107,6 @@
                     <canvas id="tvlChart"></canvas>
                 </div>
 
-                <!-- Distribution Chart -->
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h4>Migration Distribution</h4>
-                    </div>
-                    <canvas id="distributionChart"></canvas>
-                </div>
-
                 <!-- Chain Breakdown -->
                 <div class="chart-card">
                     <div class="chart-header">
@@ -140,7 +127,7 @@
                 <!-- Sonic -->
                 <div class="chain-card sonic">
                     <div class="chain-header">
-                        <div class="chain-icon">Æ</div>
+                        <div class="chain-icon">ï¿½</div>
                         <h4>Sonic</h4>
                     </div>
                     <div class="chain-stats">
@@ -156,12 +143,8 @@
                             <span class="stat-label">Holders</span>
                             <span class="stat-value" id="sonic-holders">0</span>
                         </div>
-                        <div class="stat">
-                            <span class="stat-label">PAL Migrated</span>
-                            <span class="stat-value" id="sonic-migrated">0</span>
-                        </div>
                     </div>
-                    <a href="https://sonicscan.org/token/0xe90fe2de4a415ad48b6dcec08ba6ae98231948ac" target="_blank" class="chain-link">View on Sonicscan ’</a>
+                    <a href="https://sonicscan.org/token/0xe90fe2de4a415ad48b6dcec08ba6ae98231948ac" target="_blank" class="chain-link">View on Sonicscan ï¿½</a>
                 </div>
 
                 <!-- Plasma -->
@@ -180,13 +163,13 @@
                             <span class="stat-value" id="plasma-holders">19</span>
                         </div>
                     </div>
-                    <a href="https://plasmascan.to/token/0xe90FE2DE4A415aD48B6DcEc08bA6ae98231948Ac" target="_blank" class="chain-link">View on Plasmascan ’</a>
+                    <a href="https://plasmascan.to/token/0xe90FE2DE4A415aD48B6DcEc08bA6ae98231948Ac" target="_blank" class="chain-link">View on Plasmascan ï¿½</a>
                 </div>
 
                 <!-- Ethereum -->
                 <div class="chain-card ethereum">
                     <div class="chain-header">
-                        <div class="chain-icon">ë</div>
+                        <div class="chain-icon">ï¿½</div>
                         <h4>Ethereum</h4>
                     </div>
                     <div class="chain-stats">
@@ -198,12 +181,8 @@
                             <span class="stat-label">Holders</span>
                             <span class="stat-value" id="eth-holders">0</span>
                         </div>
-                        <div class="stat">
-                            <span class="stat-label">PAL Migrated</span>
-                            <span class="stat-value" id="eth-migrated">0</span>
-                        </div>
                     </div>
-                    <a href="https://etherscan.io/token/0xe90FE2DE4A415aD48B6DcEc08bA6ae98231948Ac" target="_blank" class="chain-link">View on Etherscan ’</a>
+                    <a href="https://etherscan.io/token/0xe90FE2DE4A415aD48B6DcEc08bA6ae98231948Ac" target="_blank" class="chain-link">View on Etherscan ï¿½</a>
                 </div>
             </div>
         </div>
@@ -234,47 +213,6 @@
                     <div class="staking-stat">
                         <div class="label">Stakers</div>
                         <div class="value" id="stakers-count">0</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Migration Section -->
-    <section class="section" id="migration">
-        <div class="container">
-            <h3 class="section-title">PAL ’ TREVEE Migration</h3>
-
-            <div class="migration-grid">
-                <div class="migration-card">
-                    <div class="icon">=Ê</div>
-                    <div class="migration-stat">
-                        <div class="label">Total Migrations</div>
-                        <div class="value" id="migration-count">0</div>
-                    </div>
-                </div>
-
-                <div class="migration-card">
-                    <div class="icon">=°</div>
-                    <div class="migration-stat">
-                        <div class="label">Total PAL Migrated</div>
-                        <div class="value" id="migration-total">0 PAL</div>
-                    </div>
-                </div>
-
-                <div class="migration-card">
-                    <div class="icon">=È</div>
-                    <div class="migration-stat">
-                        <div class="label">Average Migration</div>
-                        <div class="value" id="migration-avg">0 PAL</div>
-                    </div>
-                </div>
-
-                <div class="migration-card">
-                    <div class="icon">=%</div>
-                    <div class="migration-stat">
-                        <div class="label">Largest Migration</div>
-                        <div class="value" id="migration-max">0 PAL</div>
                     </div>
                 </div>
             </div>

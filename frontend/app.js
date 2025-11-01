@@ -3,7 +3,7 @@ const API_ENDPOINT = '/api/metrics';
 const UPDATE_INTERVAL = 30000; // 30 seconds
 
 // ===== Chart Instances =====
-let priceChart, tvlChart, distributionChart, chainChart, revenueChart, buybackChart;
+let priceChart, tvlChart, chainChart, revenueChart, buybackChart;
 
 // ===== Initialize Dashboard =====
 document.addEventListener('DOMContentLoaded', () => {
@@ -41,9 +41,6 @@ function updateDashboard(data) {
 
     // Update staking metrics
     updateStakingMetrics(data);
-
-    // Update migration data
-    updateMigrationData(data);
 
     // Update revenue and buybacks
     updateRevenueData(data);
@@ -91,7 +88,6 @@ function updateHeroMetrics(data) {
     document.getElementById('total-supply').textContent = `${formatNumber(data.total_supply || 50000000)} TREVEE`;
     document.getElementById('circulating-supply').textContent = `${formatNumber(data.circulating_supply || 0)} TREVEE`;
     document.getElementById('staked-amount').textContent = `${formatNumber(data.total_staked || 0)} TREVEE`;
-    document.getElementById('pal-migrated').textContent = `${formatNumber(data.total_pal_migrated || 0)} PAL`;
 }
 
 // ===== Update Chain Data =====
@@ -103,7 +99,6 @@ function updateChainData(data) {
         document.getElementById('sonic-supply').textContent = formatNumber(chains.sonic.supply || 0);
         document.getElementById('sonic-staked').textContent = formatNumber(chains.sonic.staked || 0);
         document.getElementById('sonic-holders').textContent = formatNumber(chains.sonic.holders || 0);
-        document.getElementById('sonic-migrated').textContent = `${formatNumber(chains.sonic.pal_migrated || 0)} PAL`;
     }
 
     // Plasma
@@ -116,7 +111,6 @@ function updateChainData(data) {
     if (chains.ethereum) {
         document.getElementById('eth-supply').textContent = formatNumber(chains.ethereum.supply || 0);
         document.getElementById('eth-holders').textContent = formatNumber(chains.ethereum.holders || 0);
-        document.getElementById('eth-migrated').textContent = `${formatNumber(chains.ethereum.pal_migrated || 0)} PAL`;
     }
 }
 
@@ -130,16 +124,6 @@ function updateStakingMetrics(data) {
     document.getElementById('staking-ratio').textContent = `${stakingRatio.toFixed(2)}%`;
     document.getElementById('stk-supply').textContent = formatNumber(data.stk_supply || 0);
     document.getElementById('stakers-count').textContent = formatNumber(data.stakers_count || 0);
-}
-
-// ===== Update Migration Data =====
-function updateMigrationData(data) {
-    const migration = data.migration || {};
-
-    document.getElementById('migration-count').textContent = formatNumber(migration.total_migrations || 0);
-    document.getElementById('migration-total').textContent = `${formatNumber(migration.total_pal || 0)} PAL`;
-    document.getElementById('migration-avg').textContent = `${formatNumber(migration.average || 0)} PAL`;
-    document.getElementById('migration-max').textContent = `${formatNumber(migration.max || 0)} PAL`;
 }
 
 // ===== Update Revenue Data =====
@@ -210,26 +194,6 @@ function initializeCharts() {
         options: getLineChartOptions('$')
     });
 
-    // Distribution Chart
-    const distributionCtx = document.getElementById('distributionChart').getContext('2d');
-    distributionChart = new Chart(distributionCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['1-10k', '10k-50k', '50k-100k', '100k-500k', '500k+'],
-            datasets: [{
-                data: [0, 0, 0, 0, 0],
-                backgroundColor: [
-                    '#00d4ff',
-                    '#7b61ff',
-                    '#ff4757',
-                    '#ffb800',
-                    '#00ff88'
-                ]
-            }]
-        },
-        options: getDoughnutChartOptions()
-    });
-
     // Chain Chart
     const chainCtx = document.getElementById('chainChart').getContext('2d');
     chainChart = new Chart(chainCtx, {
@@ -291,19 +255,6 @@ function updateCharts(data) {
         tvlChart.data.labels = data.tvl_history.labels || [];
         tvlChart.data.datasets[0].data = data.tvl_history.values || [];
         tvlChart.update();
-    }
-
-    // Update distribution chart
-    if (data.migration_distribution) {
-        const dist = data.migration_distribution;
-        distributionChart.data.datasets[0].data = [
-            dist['1-10k'] || 0,
-            dist['10k-50k'] || 0,
-            dist['50k-100k'] || 0,
-            dist['100k-500k'] || 0,
-            dist['500k+'] || 0
-        ];
-        distributionChart.update();
     }
 
     // Update chain chart
