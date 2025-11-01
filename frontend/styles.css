@@ -293,6 +293,12 @@ a:hover {
     color: var(--bg-primary);
 }
 
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
 /* ===== Chains Section ===== */
 .chains-grid {
     display: grid;

@@ -18,16 +18,28 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===== Fetch Metrics from API =====
 async function fetchMetrics() {
     try {
+        console.log('Fetching metrics from:', API_ENDPOINT);
         const response = await fetch(API_ENDPOINT);
-        if (!response.ok) throw new Error('Failed to fetch metrics');
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
         const data = await response.json();
+        console.log('Data received:', data);
+
+        if (!data || Object.keys(data).length === 0) {
+            throw new Error('Empty data received from API');
+        }
+
         updateDashboard(data);
         updateLastUpdate();
+
+        // Clear any previous errors
+        hideError();
     } catch (error) {
         console.error('Error fetching metrics:', error);
-        // Show error state
-        showError('Unable to fetch data. Retrying...');
+        showError(`Unable to fetch data: ${error.message}. Retrying...`);
     }
 }
 
@@ -432,6 +444,24 @@ function updateLastUpdate() {
 }
 
 function showError(message) {
-    // Simple error display - could be enhanced with a toast notification
     console.error(message);
+    // Show error in the page header
+    const heroTitle = document.querySelector('.hero-title');
+    if (heroTitle) {
+        let errorDiv = document.getElementById('error-message');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.id = 'error-message';
+            errorDiv.style.cssText = 'color: #ff4757; font-size: 14px; margin-top: 10px; padding: 10px; background: rgba(255, 71, 87, 0.1); border-radius: 8px;';
+            heroTitle.appendChild(errorDiv);
+        }
+        errorDiv.textContent = message;
+    }
+}
+
+function hideError() {
+    const errorDiv = document.getElementById('error-message');
+    if (errorDiv) {
+        errorDiv.remove();
+    }
 }
