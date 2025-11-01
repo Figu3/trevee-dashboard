@@ -456,14 +456,6 @@ def get_metrics():
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
-# Vercel serverless handler
-def handler(request):
-    with app.request_context(request.environ):
-        try:
-            return app.full_dispatch_request()
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
-
 # For local testing
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
