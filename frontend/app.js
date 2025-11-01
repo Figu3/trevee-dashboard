@@ -389,6 +389,13 @@ function setupChartControls() {
 
 // ===== Utility Functions =====
 function formatNumber(num) {
+    // Handle null, undefined, or non-numeric values
+    if (num == null || isNaN(num) || typeof num === 'string') {
+        num = 0;
+    }
+
+    num = Number(num);
+
     if (num >= 1000000) {
         return (num / 1000000).toFixed(2) + 'M';
     } else if (num >= 1000) {
@@ -398,6 +405,13 @@ function formatNumber(num) {
 }
 
 function formatCurrency(num) {
+    // Handle null, undefined, or non-numeric values
+    if (num == null || isNaN(num) || typeof num === 'string') {
+        num = 0;
+    }
+
+    num = Number(num);
+
     if (num >= 1000000000) {
         return '$' + (num / 1000000000).toFixed(2) + 'B';
     } else if (num >= 1000000) {
