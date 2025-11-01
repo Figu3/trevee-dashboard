@@ -1,0 +1,12 @@
+{
+  "name": "trevee-dashboard",
+  "version": "1.0.0",
+  "description": "Comprehensive TREVEE token data hub - Real-time metrics, TVL, staking, migration analytics, and more",
+  "scripts": {
+    "dev": "python3 -m http.server 3000 --directory frontend",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["trevee", "dashboard", "defi", "analytics", "blockchain"],
+  "author": "",
+  "license": "MIT"
+}

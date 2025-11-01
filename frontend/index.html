@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TREVEE Dashboard - Comprehensive Token Analytics Hub</title>
+    <meta name="description" content="Real-time TREVEE token metrics, TVL, staking analytics, migration data, revenue, and buybacks across Sonic, Plasma, and Ethereum">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>TREVEE</h1>
+                    <span class="logo-subtitle">Analytics Hub</span>
+                </div>
+                <nav class="nav">
+                    <a href="#overview">Overview</a>
+                    <a href="#analytics">Analytics</a>
+                    <a href="#staking">Staking</a>
+                    <a href="#migration">Migration</a>
+                    <a href="#revenue">Revenue</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section - Key Metrics -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-title">
+                <h2>TREVEE Token Metrics</h2>
+                <p class="subtitle">Real-time data across Sonic, Plasma, and Ethereum</p>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card primary">
+                    <div class="metric-label">Token Price</div>
+                    <div class="metric-value" id="token-price">$0.00</div>
+                    <div class="metric-change" id="price-change">+0.00%</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Market Cap</div>
+                    <div class="metric-value" id="market-cap">$0</div>
+                    <div class="metric-subtext" id="mcap-rank">-</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Total Value Locked</div>
+                    <div class="metric-value" id="total-tvl">$0</div>
+                    <div class="metric-subtext" id="tvl-breakdown">-</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Total Holders</div>
+                    <div class="metric-value" id="total-holders">0</div>
+                    <div class="metric-subtext" id="holders-change">-</div>
+                </div>
+            </div>
+
+            <!-- Secondary Metrics -->
+            <div class="secondary-metrics">
+                <div class="secondary-metric">
+                    <span class="label">Total Supply:</span>
+                    <span class="value" id="total-supply">50,000,000 TREVEE</span>
+                </div>
+                <div class="secondary-metric">
+                    <span class="label">Circulating Supply:</span>
+                    <span class="value" id="circulating-supply">0 TREVEE</span>
+                </div>
+                <div class="secondary-metric">
+                    <span class="label">Staked:</span>
+                    <span class="value" id="staked-amount">0 TREVEE</span>
+                </div>
+                <div class="secondary-metric">
+                    <span class="label">PAL Migrated:</span>
+                    <span class="value" id="pal-migrated">0 PAL</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="section" id="analytics">
+        <div class="container">
+            <h3 class="section-title">Analytics Overview</h3>
+
+            <div class="charts-grid">
+                <!-- Price Chart -->
+                <div class="chart-card large">
+                    <div class="chart-header">
+                        <h4>Price History</h4>
+                        <div class="chart-controls">
+                            <button class="chart-btn active" data-period="24h">24H</button>
+                            <button class="chart-btn" data-period="7d">7D</button>
+                            <button class="chart-btn" data-period="30d">30D</button>
+                            <button class="chart-btn" data-period="all">ALL</button>
+                        </div>
+                    </div>
+                    <canvas id="priceChart"></canvas>
+                </div>
+
+                <!-- TVL Chart -->
+                <div class="chart-card large">
+                    <div class="chart-header">
+                        <h4>Total Value Locked</h4>
+                    </div>
+                    <canvas id="tvlChart"></canvas>
+                </div>
+
+                <!-- Distribution Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h4>Migration Distribution</h4>
+                    </div>
+                    <canvas id="distributionChart"></canvas>
+                </div>
+
+                <!-- Chain Breakdown -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h4>Supply by Chain</h4>
+                    </div>
+                    <canvas id="chainChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Multi-Chain Overview -->
+    <section class="section chains-section" id="overview">
+        <div class="container">
+            <h3 class="section-title">Multi-Chain Overview</h3>
+
+            <div class="chains-grid">
+                <!-- Sonic -->
+                <div class="chain-card sonic">
+                    <div class="chain-header">
+                        <div class="chain-icon">Æ</div>
+                        <h4>Sonic</h4>
+                    </div>
+                    <div class="chain-stats">
+                        <div class="stat">
+                            <span class="stat-label">TREVEE Supply</span>
+                            <span class="stat-value" id="sonic-supply">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">stkTREVEE Staked</span>
+                            <span class="stat-value" id="sonic-staked">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Holders</span>
+                            <span class="stat-value" id="sonic-holders">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">PAL Migrated</span>
+                            <span class="stat-value" id="sonic-migrated">0</span>
+                        </div>
+                    </div>
+                    <a href="https://sonicscan.org/token/0xe90fe2de4a415ad48b6dcec08ba6ae98231948ac" target="_blank" class="chain-link">View on Sonicscan ’</a>
+                </div>
+
+                <!-- Plasma -->
+                <div class="chain-card plasma">
+                    <div class="chain-header">
+                        <div class="chain-icon">"</div>
+                        <h4>Plasma</h4>
+                    </div>
+                    <div class="chain-stats">
+                        <div class="stat">
+                            <span class="stat-label">TREVEE Supply</span>
+                            <span class="stat-value" id="plasma-supply">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Holders</span>
+                            <span class="stat-value" id="plasma-holders">19</span>
+                        </div>
+                    </div>
+                    <a href="https://plasmascan.to/token/0xe90FE2DE4A415aD48B6DcEc08bA6ae98231948Ac" target="_blank" class="chain-link">View on Plasmascan ’</a>
+                </div>
+
+                <!-- Ethereum -->
+                <div class="chain-card ethereum">
+                    <div class="chain-header">
+                        <div class="chain-icon">ë</div>
+                        <h4>Ethereum</h4>
+                    </div>
+                    <div class="chain-stats">
+                        <div class="stat">
+                            <span class="stat-label">TREVEE Supply</span>
+                            <span class="stat-value" id="eth-supply">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Holders</span>
+                            <span class="stat-value" id="eth-holders">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">PAL Migrated</span>
+                            <span class="stat-value" id="eth-migrated">0</span>
+                        </div>
+                    </div>
+                    <a href="https://etherscan.io/token/0xe90FE2DE4A415aD48B6DcEc08bA6ae98231948Ac" target="_blank" class="chain-link">View on Etherscan ’</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Staking Section -->
+    <section class="section" id="staking">
+        <div class="container">
+            <h3 class="section-title">Staking Metrics</h3>
+
+            <div class="staking-grid">
+                <div class="staking-card">
+                    <div class="staking-stat">
+                        <div class="label">Total Staked</div>
+                        <div class="value" id="staking-total">0 TREVEE</div>
+                    </div>
+                    <div class="staking-stat">
+                        <div class="label">Staking Ratio</div>
+                        <div class="value" id="staking-ratio">0%</div>
+                    </div>
+                </div>
+
+                <div class="staking-card">
+                    <div class="staking-stat">
+                        <div class="label">stkTREVEE Supply</div>
+                        <div class="value" id="stk-supply">0</div>
+                    </div>
+                    <div class="staking-stat">
+                        <div class="label">Stakers</div>
+                        <div class="value" id="stakers-count">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Migration Section -->
+    <section class="section" id="migration">
+        <div class="container">
+            <h3 class="section-title">PAL ’ TREVEE Migration</h3>
+
+            <div class="migration-grid">
+                <div class="migration-card">
+                    <div class="icon">=Ê</div>
+                    <div class="migration-stat">
+                        <div class="label">Total Migrations</div>
+                        <div class="value" id="migration-count">0</div>
+                    </div>
+                </div>
+
+                <div class="migration-card">
+                    <div class="icon">=°</div>
+                    <div class="migration-stat">
+                        <div class="label">Total PAL Migrated</div>
+                        <div class="value" id="migration-total">0 PAL</div>
+                    </div>
+                </div>
+
+                <div class="migration-card">
+                    <div class="icon">=È</div>
+                    <div class="migration-stat">
+                        <div class="label">Average Migration</div>
+                        <div class="value" id="migration-avg">0 PAL</div>
+                    </div>
+                </div>
+
+                <div class="migration-card">
+                    <div class="icon">=%</div>
+                    <div class="migration-stat">
+                        <div class="label">Largest Migration</div>
+                        <div class="value" id="migration-max">0 PAL</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Revenue & Buybacks Section -->
+    <section class="section revenue-section" id="revenue">
+        <div class="container">
+            <h3 class="section-title">Revenue & Buybacks</h3>
+
+            <div class="revenue-grid">
+                <!-- Revenue Card -->
+                <div class="revenue-card">
+                    <div class="card-header">
+                        <h4>Protocol Revenue</h4>
+                        <span class="badge">Mock Data</span>
+                    </div>
+                    <div class="revenue-stats">
+                        <div class="stat-large">
+                            <div class="label">Total Revenue (30d)</div>
+                            <div class="value" id="revenue-30d">$0</div>
+                            <div class="change positive" id="revenue-change">+0%</div>
+                        </div>
+                        <div class="stat-row">
+                            <div class="stat-small">
+                                <span class="label">Today</span>
+                                <span class="value" id="revenue-today">$0</span>
+                            </div>
+                            <div class="stat-small">
+                                <span class="label">Yesterday</span>
+                                <span class="value" id="revenue-yesterday">$0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <canvas id="revenueChart"></canvas>
+                </div>
+
+                <!-- Buybacks Card -->
+                <div class="revenue-card">
+                    <div class="card-header">
+                        <h4>Token Buybacks</h4>
+                        <span class="badge">Mock Data</span>
+                    </div>
+                    <div class="revenue-stats">
+                        <div class="stat-large">
+                            <div class="label">Total Buybacks (30d)</div>
+                            <div class="value" id="buyback-30d">$0</div>
+                            <div class="change positive" id="buyback-change">+0%</div>
+                        </div>
+                        <div class="stat-row">
+                            <div class="stat-small">
+                                <span class="label">TREVEE Bought</span>
+                                <span class="value" id="buyback-amount">0</span>
+                            </div>
+                            <div class="stat-small">
+                                <span class="label">Avg Price</span>
+                                <span class="value" id="buyback-avg-price">$0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <canvas id="buybackChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>TREVEE</h4>
+                    <p>Comprehensive token analytics and data hub</p>
+                </div>
+                <div class="footer-section">
+                    <h5>Resources</h5>
+                    <a href="https://migration.trevee.xyz" target="_blank">Migration Portal</a>
+                    <a href="https://docs.trevee.xyz" target="_blank">Documentation</a>
+                </div>
+                <div class="footer-section">
+                    <h5>Community</h5>
+                    <a href="#" target="_blank">Twitter</a>
+                    <a href="#" target="_blank">Discord</a>
+                </div>
+                <div class="footer-section">
+                    <h5>Powered by</h5>
+                    <p>Real-time blockchain data</p>
+                    <p class="last-update">Last updated: <span id="last-update">-</span></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
