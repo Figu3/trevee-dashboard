@@ -94,19 +94,80 @@ def get_holder_count_estimate(rpc_url, token_address, recent_blocks=50000):
         print(f"Error estimating holders: {e}")
         return 0
 
-def generate_mock_price_history():
-    """Generate realistic price history"""
+def get_price_history_from_coingecko():
+    """Fetch 24h price history from CoinGecko"""
+    try:
+        coin_id = "trevee"
+        url = f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart"
+        params = {
+            "vs_currency": "usd",
+            "days": 1,
+            "interval": "hourly"
+        }
+        response = requests.get(url, params=params, timeout=10)
+
+        if response.status_code == 200:
+            data = response.json()
+            prices = data.get("prices", [])
+
+            if len(prices) > 0:
+                labels = []
+                values = []
+
+                for timestamp_ms, price in prices[-24:]:
+                    hour = datetime.fromtimestamp(timestamp_ms / 1000).strftime("%H:00")
+                    labels.append(hour)
+                    values.append(round(price, 6))
+
+                return {"labels": labels, "values": values, "source": "coingecko"}
+    except Exception as e:
+        print(f"Error fetching CoinGecko price history: {e}")
+
+    return None
+
+def get_price_history_from_geckoterminal():
+    """Fetch 24h price history from GeckoTerminal"""
+    try:
+        url = f"https://api.geckoterminal.com/api/v2/networks/sonic/tokens/{TREVEE_TOKEN}/ohlcv/hour"
+        params = {"aggregate": 1, "limit": 24}
+        response = requests.get(url, params=params, timeout=10)
+
+        if response.status_code == 200:
+            data = response.json()
+            ohlcv_list = data.get("data", {}).get("attributes", {}).get("ohlcv_list", [])
+
+            if len(ohlcv_list) > 0:
+                labels = []
+                values = []
+
+                for entry in ohlcv_list[-24:]:  # Last 24 hours
+                    timestamp, open_price, high, low, close_price, volume = entry
+                    hour = datetime.fromtimestamp(timestamp).strftime("%H:00")
+                    labels.append(hour)
+                    values.append(float(close_price))
+
+                return {"labels": labels, "values": values, "source": "geckoterminal"}
+    except Exception as e:
+        print(f"Error fetching GeckoTerminal price history: {e}")
+
+    return None
+
+def generate_mock_price_history(current_price=0.048):
+    """Generate realistic price history based on current price"""
     labels = []
     values = []
-    base_price = 0.045
+    base_price = current_price * 0.95  # Start 5% lower
 
     for i in range(24):
         labels.append(f"{i}:00")
         price_change = random.uniform(-0.002, 0.003)
-        base_price = max(0.01, base_price + price_change)
+        base_price = max(current_price * 0.8, base_price + price_change)
         values.append(round(base_price, 6))
 
-    return {"labels": labels, "values": values}
+    # Ensure last value is close to current price
+    values[-1] = current_price
+
+    return {"labels": labels, "values": values, "source": "estimate"}
 
 def generate_mock_tvl_history(current_tvl):
     """Generate TVL history based on current TVL"""
@@ -122,14 +183,120 @@ def generate_mock_tvl_history(current_tvl):
 
     return {"labels": labels, "values": values}
 
+def get_price_from_geckoterminal():
+    """Fetch price from GeckoTerminal API (DEX aggregator)"""
+    try:
+        # GeckoTerminal tracks tokens on Sonic chain
+        # Try Sonic chain first (chain ID 146)
+        url = f"https://api.geckoterminal.com/api/v2/networks/sonic/tokens/{TREVEE_TOKEN}"
+        response = requests.get(url, timeout=10)
+
+        if response.status_code == 200:
+            data = response.json()
+            token_data = data.get("data", {}).get("attributes", {})
+
+            price_usd = float(token_data.get("price_usd", 0))
+            price_change_24h = float(token_data.get("price_change_percentage_24h", 0))
+
+            if price_usd > 0:
+                return {
+                    "price": price_usd,
+                    "price_change_24h": price_change_24h,
+                    "market_cap_rank": None,
+                    "source": "geckoterminal"
+                }
+    except Exception as e:
+        print(f"GeckoTerminal API error: {e}")
+
+    return None
+
+def get_price_from_coingecko():
+    """Fetch price from CoinGecko API"""
+    try:
+        # TREVEE coin ID on CoinGecko
+        coin_id = "trevee"
+        url = f"https://api.coingecko.com/api/v3/coins/{coin_id}"
+        params = {
+            "localization": "false",
+            "tickers": "false",
+            "market_data": "true",
+            "community_data": "false",
+            "developer_data": "false",
+            "sparkline": "false"
+        }
+        response = requests.get(url, params=params, timeout=10)
+
+        if response.status_code == 200:
+            data = response.json()
+            market_data = data.get("market_data", {})
+
+            price = market_data.get("current_price", {}).get("usd", 0)
+            price_change_24h = market_data.get("price_change_percentage_24h", 0)
+            market_cap_rank = data.get("market_cap_rank")
+            market_cap = market_data.get("market_cap", {}).get("usd", 0)
+            total_volume = market_data.get("total_volume", {}).get("usd", 0)
+            circulating_supply = market_data.get("circulating_supply", 0)
+
+            if price > 0:
+                return {
+                    "price": price,
+                    "price_change_24h": price_change_24h,
+                    "market_cap_rank": market_cap_rank,
+                    "market_cap": market_cap,
+                    "volume_24h": total_volume,
+                    "circulating_supply": circulating_supply,
+                    "source": "coingecko"
+                }
+    except Exception as e:
+        print(f"CoinGecko API error: {e}")
+
+    return None
+
+def get_price_from_dex():
+    """Calculate price from DEX liquidity pools on Sonic"""
+    try:
+        # Common stablecoin pairs on Sonic
+        stablecoins = [
+            "0x29219dd400f2Bf60E5a23d13Be72B486D4038894",  # USDC on Sonic
+            "0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38",  # USDT on Sonic
+        ]
+
+        # Try to find a TREVEE/stablecoin pool
+        # This would require querying DEX contracts (Uniswap V2/V3 style)
+        # For now, return None - implement when DEX pool addresses are known
+
+        return None
+    except Exception as e:
+        print(f"DEX price fetch error: {e}")
+        return None
+
 def get_coingecko_data():
-    """Fetch real price data from CoinGecko (if available)"""
-    # For now, return mock data since TREVEE might not be on CoinGecko yet
-    # When listed, replace with actual API call
+    """Fetch real price data with multiple fallbacks"""
+    # Try CoinGecko first (most accurate when listed)
+    cg_data = get_price_from_coingecko()
+    if cg_data:
+        print(f"Using CoinGecko price: ${cg_data['price']}")
+        return cg_data
+
+    # Try GeckoTerminal (tracks DEX prices)
+    gt_data = get_price_from_geckoterminal()
+    if gt_data:
+        print(f"Using GeckoTerminal price: ${gt_data['price']}")
+        return gt_data
+
+    # Try DEX pools directly
+    dex_data = get_price_from_dex()
+    if dex_data:
+        print(f"Using DEX pool price: ${dex_data['price']}")
+        return dex_data
+
+    # Fallback to estimated price
+    print("Using fallback price estimate")
     return {
         "price": 0.048,
-        "price_change_24h": random.uniform(-5, 8),
-        "market_cap_rank": None
+        "price_change_24h": 0,
+        "market_cap_rank": None,
+        "source": "estimate"
     }
 
 def generate_revenue_data():
@@ -197,22 +364,36 @@ def get_metrics():
         total_supply = TREVEE_TOTAL_SUPPLY
         circulating_supply = total_supply - sonic_staked
 
-        # Get price data
+        # Get price data from CoinGecko (or fallbacks)
         price_data = get_coingecko_data()
         token_price = price_data["price"]
+        price_source = price_data.get("source", "unknown")
 
-        # Calculate market cap and TVL
-        market_cap = circulating_supply * token_price
+        # Use CoinGecko market cap if available, otherwise calculate
+        if price_data.get("market_cap"):
+            market_cap = price_data["market_cap"]
+        else:
+            market_cap = circulating_supply * token_price
+
+        # Calculate TVL
         total_tvl = (sonic_supply + plasma_supply + eth_supply) * token_price
 
         # Total holders (approximate)
         total_holders = sonic_holders + plasma_holders + eth_holders
 
-        # Generate historical data
-        price_history = generate_mock_price_history()
+        # Fetch price history (try CoinGecko first, then GeckoTerminal, then generate)
+        price_history = get_price_history_from_coingecko()
+        if not price_history:
+            price_history = get_price_history_from_geckoterminal()
+        if not price_history:
+            price_history = generate_mock_price_history(token_price)
+
+        # Generate other historical data
         tvl_history = generate_mock_tvl_history(total_tvl)
         revenue_data = generate_revenue_data()
         buyback_data = generate_buyback_data()
+
+        print(f"Price data source: {price_source}, Price: ${token_price}, History source: {price_history.get('source', 'unknown')}")
 
         # Build response
         response = {
@@ -254,6 +435,15 @@ def get_metrics():
 
             "price_history": price_history,
             "tvl_history": tvl_history,
+
+            "data_sources": {
+                "price": price_source,
+                "price_history": price_history.get("source", "unknown"),
+                "supply": "blockchain_rpc",
+                "holders": "blockchain_rpc_estimate",
+                "revenue": "mock",
+                "buybacks": "mock"
+            },
 
             "timestamp": datetime.now().isoformat()
         }
