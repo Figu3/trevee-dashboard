@@ -3,7 +3,7 @@ const API_ENDPOINT = '/api/metrics';
 const UPDATE_INTERVAL = 30000; // 30 seconds
 
 // ===== Chart Instances =====
-let priceChart, tvlChart, chainChart, revenueChart, buybackChart;
+let priceChart, chainChart, revenueChart, buybackChart;
 
 // ===== Initialize Dashboard =====
 document.addEventListener('DOMContentLoaded', () => {
@@ -188,24 +188,6 @@ function initializeCharts() {
         options: getLineChartOptions('$')
     });
 
-    // TVL Chart
-    const tvlCtx = document.getElementById('tvlChart').getContext('2d');
-    tvlChart = new Chart(tvlCtx, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                label: 'TVL',
-                data: [],
-                borderColor: '#7b61ff',
-                backgroundColor: 'rgba(123, 97, 255, 0.1)',
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: getLineChartOptions('$')
-    });
-
     // Chain Chart
     const chainCtx = document.getElementById('chainChart').getContext('2d');
     chainChart = new Chart(chainCtx, {
@@ -260,13 +242,6 @@ function updateCharts(data) {
         priceChart.data.labels = data.price_history.labels || [];
         priceChart.data.datasets[0].data = data.price_history.values || [];
         priceChart.update();
-    }
-
-    // Update TVL chart
-    if (data.tvl_history) {
-        tvlChart.data.labels = data.tvl_history.labels || [];
-        tvlChart.data.datasets[0].data = data.tvl_history.values || [];
-        tvlChart.update();
     }
 
     // Update chain chart
